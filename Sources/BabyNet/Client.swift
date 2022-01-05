@@ -9,7 +9,7 @@
 import Foundation
 
 
-public protocol BabyNetClientProtocol {
+protocol BabyNetClientProtocol {
     
     func execute(callback: @escaping (Result<Data, Error>) -> ())
 }
