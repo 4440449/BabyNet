@@ -16,9 +16,9 @@ protocol BabyNetRepositoryDTOMapperProtocol {
 
 public final class BabyNetRepositoryDTOMapper: BabyNetRepositoryDTOMapperProtocol {
     
-    private let client: ApiClientProtocol
+    private let client: BabyNetClientProtocol
     
-    public init(client: ApiClientProtocol) {
+    public init(client: BabyNetClientProtocol) {
         self.client = client
     }
     
