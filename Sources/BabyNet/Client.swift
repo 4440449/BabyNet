@@ -9,13 +9,13 @@
 import Foundation
 
 
-public protocol ApiClientProtocol {
+public protocol BabyNetClientProtocol {
     
     func execute(callback: @escaping (Result<Data, Error>) -> ())
 }
 
 
-public final class BabyNetClientImpl: ApiClientProtocol {
+public final class BabyNetClient: BabyNetClientProtocol {
     
     private let requestConfig: BabyNetRequest
     private let sessionConfig: BabyNetSession

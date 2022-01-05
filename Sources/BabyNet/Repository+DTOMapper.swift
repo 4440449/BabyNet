@@ -9,12 +9,12 @@
 import Foundation
 
 
-protocol NetworkRepositoryDTOMapperProtocol {
+protocol BabyNetRepositoryDTOMapperProtocol {
     func request<D: Decodable & DomainConvertable, R>(decoderType: D.Type, _ callback: @escaping (Result<R, Error>) -> ())
 }
 
 
-public final class NetworkRepositoryDTOMapper: NetworkRepositoryDTOMapperProtocol {
+public final class BabyNetRepositoryDTOMapper: BabyNetRepositoryDTOMapperProtocol {
     
     private let client: ApiClientProtocol
     
