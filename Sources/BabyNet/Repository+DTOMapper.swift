@@ -21,7 +21,9 @@ public final class BabyNetRepositoryDTOMapper: BabyNetRepositoryDTOMapperProtoco
 //    public init(client: BabyNetClientProtocol) {
 //        self.client = client
 //    }
-    
+    public init() {
+
+    }
     
     public func request<D: Decodable & DomainConvertable, R>(client: BabyNetClientProtocol, decoderType: D.Type, _ callback: @escaping (Result<R, Error>) -> ()) {
         client.execute { result in
