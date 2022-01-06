@@ -6,7 +6,7 @@
 //
 
 
-public protocol DomainConvertable {
+public protocol DomainRepresentable {
     associatedtype DomainEntity
     func parseToDomain() throws -> DomainEntity
 }
