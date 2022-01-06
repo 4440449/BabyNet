@@ -10,20 +10,20 @@ import Foundation
 
 
 protocol BabyNetRepositoryDTOMapperProtocol {
-    func request<D: Decodable & DomainConvertable, R>(decoderType: D.Type, _ callback: @escaping (Result<R, Error>) -> ())
+    func request<D: Decodable & DomainConvertable, R>(client: BabyNetClientProtocol, decoderType: D.Type, _ callback: @escaping (Result<R, Error>) -> ())
 }
 
 
 public final class BabyNetRepositoryDTOMapper: BabyNetRepositoryDTOMapperProtocol {
     
-    private let client: BabyNetClientProtocol
+//    private let client: BabyNetClientProtocol
+//
+//    public init(client: BabyNetClientProtocol) {
+//        self.client = client
+//    }
     
-    public init(client: BabyNetClientProtocol) {
-        self.client = client
-    }
     
-    
-    public func request<D: Decodable & DomainConvertable, R>(decoderType: D.Type, _ callback: @escaping (Result<R, Error>) -> ()) {
+    public func request<D: Decodable & DomainConvertable, R>(client: BabyNetClientProtocol, decoderType: D.Type, _ callback: @escaping (Result<R, Error>) -> ()) {
         client.execute { result in
             switch result {
             case let .success(data):

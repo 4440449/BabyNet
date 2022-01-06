@@ -9,21 +9,20 @@
 import Foundation
 
 
-protocol BabyNetClientProtocol {
-    
+public protocol BabyNetClientProtocol {
     func execute(callback: @escaping (Result<Data, Error>) -> ())
 }
 
 
 public final class BabyNetClient: BabyNetClientProtocol {
     
-    private let requestConfig: BabyNetRequest
-    private let sessionConfig: BabyNetSession
+        private let requestConfig: BabyNetRequest
+        private let sessionConfig: BabyNetSession
     
-    public init(requestConfig: BabyNetRequest, sessionConfig: BabyNetSession) {
-        self.requestConfig = requestConfig
-        self.sessionConfig = sessionConfig
-    }
+        public init(requestConfig: BabyNetRequest, sessionConfig: BabyNetSession) {
+            self.requestConfig = requestConfig
+            self.sessionConfig = sessionConfig
+        }
     
     public func execute(callback: @escaping (Result<Data, Error>) -> ()) {
         do {
