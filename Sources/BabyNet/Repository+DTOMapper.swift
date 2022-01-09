@@ -10,11 +10,11 @@ import Foundation
 
 
 protocol BabyNetRepositoryDTOMapperProtocol {
-    func request<D: Decodable & DomainRepresentable, R>(client: BabyNetClientProtocol, decoderType: D.Type, _ callback: @escaping (Result<R, Error>) -> ())
+    func request<D: Decodable & DomainRepresentable, R>(client: BabyNetClientProtocol, decoderType: D.Type, _ callback: @escaping (Result<R, Error>) -> ()) -> URLSessionTask?
 }
 
 
-public final class BabyNetRepositoryDTOMapper: BabyNetRepositoryDTOMapperProtocol {
+public struct BabyNetRepositoryDTOMapper: BabyNetRepositoryDTOMapperProtocol {
     
 //    private let client: BabyNetClientProtocol
 //
@@ -25,14 +25,14 @@ public final class BabyNetRepositoryDTOMapper: BabyNetRepositoryDTOMapperProtoco
 
     }
     
-    public func request<D: Decodable & DomainRepresentable, R>(client: BabyNetClientProtocol, decoderType: D.Type, _ callback: @escaping (Result<R, Error>) -> ()) {
-        client.execute { result in
+    public func request<D: Decodable & DomainRepresentable, R>(client: BabyNetClientProtocol, decoderType: D.Type, _ callback: @escaping (Result<R, Error>) -> ()) -> URLSessionTask? {
+        return client.execute { result in
             switch result {
             case let .success(data):
                 do {
                     let networkEntity = try JSONDecoder().decode(D.self, from: data)
                     let domainEntity = try networkEntity.parseToDomain()
-                    guard let resultDomainEntity = domainEntity as? R else { callback(.failure(BabyNetError.parseToDomainResultTypeCasting("Error typecasting! domainEntity: \(domainEntity) cannot be casting to expect result type: \(R.self) "))); return
+                    guard let resultDomainEntity = domainEntity as? R else { callback(.failure(BabyNetError.parseToDomainResultTypeCasting("Error typecasting! domainEntity: \(domainEntity) cannot be casting to expect result type: \(R.self)"))); return
                     }
                     callback(.success(resultDomainEntity))
                 } catch {
