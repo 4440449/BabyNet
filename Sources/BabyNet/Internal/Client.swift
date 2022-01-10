@@ -31,7 +31,8 @@ final class BabyNetClient: BabyNetClientProtocol {
             }
             guard let data = data, (200...299).contains(httpResponse.statusCode) else {
                 // сервер ответил неудачно
-                callback(.failure(BabyNetError.badResponse("\(httpResponse.statusCode)")) ); return
+                callback(.failure(BabyNetError.badResponse("\(httpResponse.statusCode)")) );
+                return
             }
             callback(.success(data))
         }

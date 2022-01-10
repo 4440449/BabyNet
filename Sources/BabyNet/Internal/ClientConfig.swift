@@ -40,7 +40,9 @@ public struct BabyNetURL {
             urlComponents.queryItems?.append(URLQueryItem(name: $0.key, value: $0.value))
             }
         }
-        guard let url = urlComponents.url else { throw BabyNetError.urlCreate("Invalid URL --- URLComponents log: \(urlComponents.debugDescription)") }
+        guard let url = urlComponents.url else {
+            throw BabyNetError.urlCreate("Invalid URL --- URLComponents log: \(urlComponents.debugDescription)")
+        }
         return url
     }
     

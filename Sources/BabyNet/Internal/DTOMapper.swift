@@ -20,7 +20,8 @@ protocol BabyNetDTOMapperProtocol {
 
 final class BabyNetDTOMapper: BabyNetDTOMapperProtocol {
     
-    private let client: BabyNetClientProtocol
+    //Для тестирования - подменять клиент на заглушку после инициализации
+    let client: BabyNetClientProtocol
     
     init() {
         self.client = BabyNetClient()
@@ -36,7 +37,8 @@ final class BabyNetDTOMapper: BabyNetDTOMapperProtocol {
                 do {
                     let networkEntity = try JSONDecoder().decode(D.self, from: data)
                     let domainEntity = try networkEntity.parseToDomain()
-                    guard let resultDomainEntity = domainEntity as? R else { callback(.failure(BabyNetError.parseToDomainResultTypeCasting("Error typecasting! domainEntity: \(domainEntity) cannot be casting to expect result type: \(R.self)"))); return
+                    guard let resultDomainEntity = domainEntity as? R else { callback(.failure(BabyNetError.parseToDomainResultTypeCasting("Error typecasting! domainEntity: \(domainEntity) cannot be casting to expect result type: \(R.self)")));
+                        return
                     }
                     callback(.success(resultDomainEntity))
                 } catch {

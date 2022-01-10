@@ -20,14 +20,15 @@ protocol BabyNetRepositoryProtocol {
 
 public final class BabyNetRepository: BabyNetRepositoryProtocol {
     
-    private let dtoMapper: BabyNetDTOMapperProtocol
+    //Для тестирования - подменять маппер на заглушку после инициализации
+    let dtoMapper: BabyNetDTOMapperProtocol
     
-    init() {
+    public init() {
         self.dtoMapper = BabyNetDTOMapper()
     }
     
     
-    func connect<D: Decodable & DomainRepresentable, R>(url: BabyNetURL,
+    public func connect<D: Decodable & DomainRepresentable, R>(url: BabyNetURL,
                                                         request: BabyNetRequest,
                                                         session: BabyNetSession,
                                                         decoderType: D.Type,
