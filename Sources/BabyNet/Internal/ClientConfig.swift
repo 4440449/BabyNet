@@ -31,7 +31,7 @@ public struct BabyNetURL {
     }
     
     
-    public func createURL() throws -> URL {
+    func createURL() throws -> URL {
         var urlComponents = URLComponents()
         urlComponents.scheme = scheme
         urlComponents.host = host
@@ -51,7 +51,7 @@ public struct BabyNetURL {
 
 public struct BabyNetRequest {
     
-    private let url: BabyNetURL
+//    private let url: BabyNetURL
     private let method: HTTPMethod
     private let header: [String : String]
     private var body: Encodable?
@@ -65,16 +65,15 @@ public struct BabyNetRequest {
     }
     
     // external init
-    public init(url: BabyNetURL, method: HTTPMethod, header: [String : String], body: Encodable?) {
-        self.url = url
+    public init(method: HTTPMethod, header: [String : String], body: Encodable?) {
         self.method = method
         self.header = header
         self.body = body
     }
     
     
-    public func createRequest() throws -> URLRequest {
-        let url = try self.url.createURL()
+    func createRequest(url: BabyNetURL) throws -> URLRequest {
+        let url = try url.createURL()
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = method.rawValue
         header.forEach { urlRequest.setValue($0.value, forHTTPHeaderField: $0.key) }
@@ -92,7 +91,7 @@ public struct BabyNetRequest {
 public enum BabyNetSession {
     case `default`
     
-    public func createSession() -> URLSession {
+    func createSession() -> URLSession {
         switch self {
         case .default:
             return URLSession(configuration: .default)
@@ -112,11 +111,5 @@ public enum BabyNetError: Error {
 }
 
 
-// MARK: - Extensions
 
-extension Encodable {
-    func jsonEncode() throws -> Data {
-        return try JSONEncoder().encode(self)
-    }
-}
 
