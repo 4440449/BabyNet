@@ -8,7 +8,7 @@
 import Foundation
 
 
-protocol BabyNetRepositoryProtocol {
+public protocol BabyNetRepositoryProtocol {
     
     func connect<D: Decodable & DomainRepresentable, R>(url: BabyNetURL,
                                                         request: BabyNetRequest,
