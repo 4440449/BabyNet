@@ -41,7 +41,7 @@ final class BabyNetDTOMapper: BabyNetDTOMapperProtocol {
                         return
                     }
                     callback(.success(resultDomainEntity))
-                } catch {
+                } catch let error {
                     callback(.failure(error))
                 }
             case let .failure(error): callback(.failure(error))
