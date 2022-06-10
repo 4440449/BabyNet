@@ -18,10 +18,10 @@ extension Encodable {
 
 // MARK: - Public Repository
 
-extension URLRequest {
-    //STUB! Т_T
-    // TODO: Заменить на реализацию NSURLRequest?
-    init() {
-        self.init(url: URL(string: "")!)
-    }
-}
+//extension URLRequest {
+//    //STUB! Т_T
+//    // TODO: Заменить на реализацию NSURLRequest?
+//    init() {
+//        self.init(url: URL(string: "")!)
+//    }
+//}
