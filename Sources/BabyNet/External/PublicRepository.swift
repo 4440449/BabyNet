@@ -10,11 +10,11 @@ import Foundation
 
 public protocol BabyNetRepositoryProtocol {
     
-    func connect<D: Decodable & DomainRepresentable, R>(url: BabyNetURL,
-                                                        request: BabyNetRequest,
-                                                        session: BabyNetSession,
-                                                        decoderType: D.Type?,
-                                                        callback: @escaping (Result <R, Error>) -> ()) -> URLSessionTask?
+    func connect<D: Decodable>(url: BabyNetURL,
+                               request: BabyNetRequest,
+                               session: BabyNetSession,
+                               decoderType: D.Type?,
+                               callback: @escaping (Result <D, Error>) -> ()) -> URLSessionTask?
 }
 
 
@@ -28,13 +28,13 @@ public final class BabyNetRepository: BabyNetRepositoryProtocol {
     }
     
     
-    public func connect<D: Decodable & DomainRepresentable, R>(url: BabyNetURL,
-                                                        request: BabyNetRequest,
-                                                        session: BabyNetSession,
-                                                        decoderType: D.Type?,
-                                                        callback: @escaping (Result <R, Error>) -> ()) -> URLSessionTask? {
+    public func connect<D: Decodable>(url: BabyNetURL,
+                                      request: BabyNetRequest,
+                                      session: BabyNetSession,
+                                      decoderType: D.Type?,
+                                      callback: @escaping (Result <D, Error>) -> ()) -> URLSessionTask? {
         do {
-            let urlSession: URLSession = session.createSession()
+            let urlSession = session.createSession()
             let urlRequest = try request.createRequest(url: url)
             return dtoMapper.request(request: urlRequest,
                                      session: urlSession,

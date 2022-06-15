@@ -11,10 +11,10 @@ import Foundation
 
 protocol BabyNetDTOMapperProtocol {
     
-    func request<D: Decodable & DomainRepresentable, R>(request: URLRequest,
-                                                        session: URLSession,
-                                                        decoderType: D.Type?,
-                                                        _ callback: @escaping (Result<R, Error>) -> ()) -> URLSessionTask?
+    func request<D: Decodable>(request: URLRequest,
+                               session: URLSession,
+                               decoderType: D.Type?,
+                               _ callback: @escaping (Result<D, Error>) -> ()) -> URLSessionTask?
 }
 
 
@@ -27,10 +27,10 @@ final class BabyNetDTOMapper: BabyNetDTOMapperProtocol {
         self.client = BabyNetClient()
     }
     
-    func request<D: Decodable & DomainRepresentable, R>(request: URLRequest,
-                                                        session: URLSession,
-                                                        decoderType: D.Type?,
-                                                        _ callback: @escaping (Result<R, Error>) -> ()) -> URLSessionTask? {
+    func request<D: Decodable>(request: URLRequest,
+                               session: URLSession,
+                               decoderType: D.Type?,
+                               _ callback: @escaping (Result<D, Error>) -> ()) -> URLSessionTask? {
         return client.execute(request: request, session: session) { result in
             switch result {
                 // .success
@@ -38,22 +38,18 @@ final class BabyNetDTOMapper: BabyNetDTOMapperProtocol {
                 //Если пришел декодер, попытаться распарсить им raw data
                 if let decoder = decoderType {
                     do {
-                        let networkEntity = try JSONDecoder().decode(decoder.self, from: data)
-                        let domainEntity = try networkEntity.parseToDomain()
-                        guard let resultDomainEntity = domainEntity as? R else { callback(.failure(BabyNetError.parseToDomainResultTypeCasting("Error typecasting! domainEntity: \(domainEntity) cannot be casting to expect result type: \(R.self)")));
-                            return
-                        }
-                        callback(.success(resultDomainEntity))
+                        let networkEntity = try JSONDecoder().decode(decoder, from: data)
+                        callback(.success(networkEntity))
                     } catch let error {
-                        callback(.failure(error))
+                        callback(.failure(BabyNetError.parseToDomain("Error parse to domain, system message --> \(error)")))
                     }
                 // если декодер не пришел, попытаться сопоставить тип ожидаемых данных с типом raw data
-                } else if let data = data as? R {
+                } else if let data = data as? D {
                     callback(.success(data))
                 } else {
-                // если не получается сопоставить, выкидываю ошибку.
+                // если не получается сопоставить, выкидываю ошибку
                 // П.С. Если декодер не положили в вызов, то ожидаемые данные могут быть только типа Result<Data, Error>)
-                    callback(.failure(BabyNetError.parseToDomainResultTypeCasting("Error typecasting! recieved raw Data type: \(data.self) cannot be casting to expect result type: \(R.self)")))
+                    callback(.failure(BabyNetError.parseToDomainResultTypeCasting("Error typecasting! The expected result type \(D.self) must be the same type as raw Data - \(data)")))
                 }
                 // .failure
             case let .failure(error): callback(.failure(error))

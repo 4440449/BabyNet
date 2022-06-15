@@ -10,9 +10,9 @@ import Foundation
 
 // MARK: - DTOMapper
 
-public protocol DomainRepresentable {
-    associatedtype DomainEntity
-    func parseToDomain() throws -> DomainEntity
-}
+//public protocol DomainRepresentable {
+//    associatedtype DomainEntity
+//    func parseToDomain() throws -> DomainEntity
+//}
 
 
