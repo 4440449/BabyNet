@@ -38,7 +38,7 @@ public struct BabyNetURL {
         urlComponents.path = path
         if let endPoint = endPoint { urlComponents.queryItems = []; endPoint.forEach {
             urlComponents.queryItems?.append(URLQueryItem(name: $0.key, value: $0.value))
-            }
+        }
         }
         guard let url = urlComponents.url else {
             throw BabyNetError.urlCreate("Invalid URL --- URLComponents log: \(urlComponents.debugDescription)")
@@ -53,9 +53,9 @@ public struct BabyNetURL {
 
 public struct BabyNetRequest {
     
-//    private let url: BabyNetURL
+    //    private let url: BabyNetURL
     private let method: HTTPMethod
-    private let header: [String : String]
+    private var header: [String : String]?
     private var body: Encodable?
     
     
@@ -67,7 +67,7 @@ public struct BabyNetRequest {
     }
     
     // external init
-    public init(method: HTTPMethod, header: [String : String], body: Encodable?) {
+    public init(method: HTTPMethod, header: [String : String]?, body: Encodable?) {
         self.method = method
         self.header = header
         self.body = body
@@ -78,10 +78,13 @@ public struct BabyNetRequest {
         let url = try url.createURL()
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = method.rawValue
-        header.forEach { urlRequest.setValue($0.value, forHTTPHeaderField: $0.key) }
-        guard let body = body else { return urlRequest }
+        if let header = header {
+            header.forEach { urlRequest.setValue($0.value, forHTTPHeaderField: $0.key) }
+        }
+        if let body = body {
+            urlRequest.httpBody = try body.jsonEncode()
+        }
         //        print("body.jsonEncode() == \(String(data: try body.jsonEncode(), encoding: .utf8)!)")
-        urlRequest.httpBody = try body.jsonEncode()
         return urlRequest
     }
     
