@@ -13,7 +13,7 @@ public protocol BabyNetRepositoryProtocol {
     func connect<D: Decodable & DomainRepresentable, R>(url: BabyNetURL,
                                                         request: BabyNetRequest,
                                                         session: BabyNetSession,
-                                                        decoderType: D.Type,
+                                                        decoderType: D.Type?,
                                                         callback: @escaping (Result <R, Error>) -> ()) -> URLSessionTask?
 }
 
@@ -31,7 +31,7 @@ public final class BabyNetRepository: BabyNetRepositoryProtocol {
     public func connect<D: Decodable & DomainRepresentable, R>(url: BabyNetURL,
                                                         request: BabyNetRequest,
                                                         session: BabyNetSession,
-                                                        decoderType: D.Type,
+                                                        decoderType: D.Type?,
                                                         callback: @escaping (Result <R, Error>) -> ()) -> URLSessionTask? {
         do {
             let urlSession: URLSession = session.createSession()
