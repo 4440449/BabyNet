@@ -14,7 +14,8 @@ public protocol BabyNetRepositoryProtocol {
                                request: BabyNetRequest,
                                session: BabyNetSession,
                                decoderType: D.Type?,
-                               callback: @escaping (Result <D, Error>) -> ()) -> URLSessionTask?
+                               responseCallback: @escaping (Result <D, Error>) -> (),
+                               taskProgressCallback: ((Progress) -> ())?) -> URLSessionTask?
 }
 
 
@@ -32,16 +33,18 @@ public final class BabyNetRepository: BabyNetRepositoryProtocol {
                                       request: BabyNetRequest,
                                       session: BabyNetSession,
                                       decoderType: D.Type?,
-                                      callback: @escaping (Result <D, Error>) -> ()) -> URLSessionTask? {
+                                      responseCallback: @escaping (Result <D, Error>) -> (),
+                                      taskProgressCallback: ((Progress) -> ())?) -> URLSessionTask? {
         do {
             let urlSession = session.createSession()
             let urlRequest = try request.createRequest(url: url)
             return dtoMapper.request(request: urlRequest,
                                      session: urlSession,
                                      decoderType: decoderType,
-                                     callback)
+                                     responseCallback: responseCallback,
+                                     taskProgressCallback: taskProgressCallback)
         } catch let requestGenerationError {
-            callback(.failure(requestGenerationError));
+            responseCallback(.failure(requestGenerationError));
             return nil
         }
     }

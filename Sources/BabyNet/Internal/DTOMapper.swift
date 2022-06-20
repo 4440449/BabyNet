@@ -14,7 +14,8 @@ protocol BabyNetDTOMapperProtocol {
     func request<D: Decodable>(request: URLRequest,
                                session: URLSession,
                                decoderType: D.Type?,
-                               _ callback: @escaping (Result<D, Error>) -> ()) -> URLSessionTask?
+                               responseCallback callback: @escaping (Result<D, Error>) -> (),
+                               taskProgressCallback: ((Progress) -> ())?) -> URLSessionTask?
 }
 
 
@@ -30,8 +31,9 @@ final class BabyNetDTOMapper: BabyNetDTOMapperProtocol {
     func request<D: Decodable>(request: URLRequest,
                                session: URLSession,
                                decoderType: D.Type?,
-                               _ callback: @escaping (Result<D, Error>) -> ()) -> URLSessionTask? {
-        return client.execute(request: request, session: session) { result in
+                               responseCallback callback: @escaping (Result<D, Error>) -> (),
+                               taskProgressCallback: ((Progress) -> ())?) -> URLSessionTask? {
+        return client.execute(request: request, session: session, responseCallback: { result in
             switch result {
                 // .success
             case let .success(data):
@@ -54,7 +56,7 @@ final class BabyNetDTOMapper: BabyNetDTOMapperProtocol {
                 // .failure
             case let .failure(error): callback(.failure(error))
             }
-        }
+        }, taskProgressCallback: taskProgressCallback)
     }
 }
 
