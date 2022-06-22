@@ -94,14 +94,15 @@ public struct BabyNetRequest {
 // MARK: - Session
 
 public enum BabyNetSession {
-    case `default`(delegate: URLSessionDataDelegate?, queue: OperationQueue?)
+    case `default`
     
-    func createSession() -> URLSession {
+    func createSession(delegate: URLSessionDataDelegate?,
+                       queue: OperationQueue?) -> URLSession {
         switch self {
-        case let .default(delegate, queue):
-                return URLSession(configuration: .default,
-                                  delegate: delegate,
-                                  delegateQueue: queue)
+        case .default:
+            return URLSession(configuration: .default,
+                              delegate: delegate,
+                              delegateQueue: queue)
         }
     }
 }

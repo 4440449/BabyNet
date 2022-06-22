@@ -14,8 +14,15 @@ public protocol BabyNetRepositoryProtocol {
                                request: BabyNetRequest,
                                session: BabyNetSession,
                                decoderType: D.Type?,
-                               responseCallback: @escaping (Result <D, Error>) -> (),
-                               taskProgressCallback: ((Progress) -> ())?) -> URLSessionTask?
+                               observationCallback:((NSKeyValueObservation) -> ())?,
+                               taskProgressCallback: ((Progress) -> ())?,
+                               responseCallback: @escaping (Result<D, Error>) -> ()) -> URLSessionTask?
+    
+    func connectWithSessionDelegate(url: BabyNetURL,
+                                    request: BabyNetRequest,
+                                    session: BabyNetSession,
+                                    sessionDelegate: URLSessionDataDelegate,
+                                    delegateQueue: OperationQueue?) -> URLSessionTask?
 }
 
 
@@ -29,22 +36,49 @@ public final class BabyNetRepository: BabyNetRepositoryProtocol {
     }
     
     
+    // MARK: - With completion response
+
     public func connect<D: Decodable>(url: BabyNetURL,
                                       request: BabyNetRequest,
                                       session: BabyNetSession,
                                       decoderType: D.Type?,
-                                      responseCallback: @escaping (Result <D, Error>) -> (),
-                                      taskProgressCallback: ((Progress) -> ())?) -> URLSessionTask? {
+                                      observationCallback:((NSKeyValueObservation) -> ())?,
+                                      taskProgressCallback: ((Progress) -> ())?,
+                                      responseCallback: @escaping (Result<D, Error>) -> ()) -> URLSessionTask? {
         do {
-            let urlSession = session.createSession()
+            let urlSession = session.createSession(delegate: nil,
+                                                   queue: nil)
             let urlRequest = try request.createRequest(url: url)
             return dtoMapper.request(request: urlRequest,
                                      session: urlSession,
                                      decoderType: decoderType,
-                                     responseCallback: responseCallback,
-                                     taskProgressCallback: taskProgressCallback)
+                                     observationCallback: observationCallback,
+                                     taskProgressCallback: taskProgressCallback,
+                                     responseCallback: responseCallback)
         } catch let requestGenerationError {
             responseCallback(.failure(requestGenerationError));
+            return nil
+        }
+    }
+    
+    
+    // MARK: - With delegate response
+
+    public func connectWithSessionDelegate(url: BabyNetURL,
+                                           request: BabyNetRequest,
+                                           session: BabyNetSession,
+                                           sessionDelegate: URLSessionDataDelegate,
+                                           delegateQueue: OperationQueue?) -> URLSessionTask? {
+        let urlSession = session.createSession(delegate: sessionDelegate,
+                                               queue: delegateQueue)
+        do {
+            let urlRequest = try request.createRequest(url: url)
+            return dtoMapper.requestWithSessionDelegate(request: urlRequest,
+                                                        session: urlSession)
+        } catch let requestGenerationError {
+            //протестить возврат ошибки
+            urlSession.delegate?.urlSession?(urlSession,
+                                             didBecomeInvalidWithError: requestGenerationError)
             return nil
         }
     }

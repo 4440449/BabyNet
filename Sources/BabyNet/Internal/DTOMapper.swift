@@ -14,8 +14,12 @@ protocol BabyNetDTOMapperProtocol {
     func request<D: Decodable>(request: URLRequest,
                                session: URLSession,
                                decoderType: D.Type?,
-                               responseCallback callback: @escaping (Result<D, Error>) -> (),
-                               taskProgressCallback: ((Progress) -> ())?) -> URLSessionTask?
+                               observationCallback:((NSKeyValueObservation) -> ())?,
+                               taskProgressCallback: ((Progress) -> ())?,
+                               responseCallback callback: @escaping (Result<D, Error>) -> ()) -> URLSessionTask?
+    
+    func requestWithSessionDelegate(request: URLRequest,
+                                    session: URLSession) -> URLSessionTask?
 }
 
 
@@ -28,12 +32,16 @@ final class BabyNetDTOMapper: BabyNetDTOMapperProtocol {
         self.client = BabyNetClient()
     }
     
+    
+    // MARK: - With completion response
+
     func request<D: Decodable>(request: URLRequest,
                                session: URLSession,
                                decoderType: D.Type?,
-                               responseCallback callback: @escaping (Result<D, Error>) -> (),
-                               taskProgressCallback: ((Progress) -> ())?) -> URLSessionTask? {
-        return client.execute(request: request, session: session, responseCallback: { result in
+                               observationCallback:((NSKeyValueObservation) -> ())?,
+                               taskProgressCallback: ((Progress) -> ())?,
+                               responseCallback callback: @escaping (Result<D, Error>) -> ()) -> URLSessionTask? {
+        return client.execute(request: request, session: session, observationCallback: observationCallback, taskProgressCallback: taskProgressCallback, responseCallback: { result in
             switch result {
                 // .success
             case let .success(data):
@@ -45,20 +53,32 @@ final class BabyNetDTOMapper: BabyNetDTOMapperProtocol {
                     } catch let error {
                         callback(.failure(BabyNetError.parseToDomain("Error parse to domain, system message --> \(error)")))
                     }
-                // если декодер не пришел, попытаться сопоставить тип ожидаемых данных с типом raw data
+                    // если декодер не пришел, попытаться сопоставить тип ожидаемых данных с типом raw data
                 } else if let data = data as? D {
                     callback(.success(data))
                 } else {
-                // если не получается сопоставить, выкидываю ошибку
-                // П.С. Если декодер не положили в вызов, то ожидаемые данные могут быть только типа Result<Data, Error>)
+                    // если не получается сопоставить, выкидываю ошибку
+                    // П.С. Если декодер не положили в вызов, то ожидаемые данные могут быть только типа Result<Data, Error>)
                     callback(.failure(BabyNetError.parseToDomainResultTypeCasting("Error typecasting! The expected result type \(D.self) must be the same type as raw Data - \(data)")))
                 }
                 // .failure
             case let .failure(error): callback(.failure(error))
             }
-        }, taskProgressCallback: taskProgressCallback)
+        })
     }
+    
+    
+    // MARK: - With delegate response
+    
+    func requestWithSessionDelegate(request: URLRequest,
+                                    session: URLSession) -> URLSessionTask? {
+        return client.executeWithSessionDelegate(request: request,
+                                                 session: session)
+    }
+    
 }
+
+
 
 
 //        return client.execute(request: request, session: session) { result in
