@@ -48,12 +48,10 @@ final class BabyNetClient: BabyNetClientProtocol {
         
         if let _ = taskProgressCallback, let _ = observationCallback {
             let observation = dataTask.progress.observe(\.fractionCompleted) { progress, _ in
-                print("BabyNet progress.fractionCompleted == \(progress.fractionCompleted)")
                 taskProgressCallback!(progress)
             }
             observationCallback!(observation)
         }
-        
         dataTask.resume()
         return dataTask
     }
